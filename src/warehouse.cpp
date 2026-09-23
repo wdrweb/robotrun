@@ -3,6 +3,7 @@
 #include "follow_line.h"
 #include "get_order.h"
 #include "navigate.h"
+#include "sort_coordinates.h"
 #include <Pololu3piPlus32U4.h>
 
 using namespace Pololu3piPlus32U4;
@@ -20,43 +21,10 @@ uint16_t sensorValues[5];
 extern Buzzer buzzer;
 extern Motors motors;
 
-void sortCoordinates() 
-{
-    // Sort by y descending first; if y is equal, sort by x descending.
-    for (int i = 0; i < productCount - 1; i++)
-    {
-        for (int j = i + 1; j < productCount; j++)
-        {
-            bool shouldSwap = false;
-
-            if (coordinates[i][1] < coordinates[j][1]) // sort Y
-            {
-                shouldSwap = true;
-            }
-            else if (coordinates[i][1] == coordinates[j][1] && coordinates[i][0] < coordinates[j][0]) // sort X
-            {
-                shouldSwap = true;
-            }
-
-            if (shouldSwap)
-            {
-                int tempX = coordinates[i][0];
-                int tempY = coordinates[i][1];
-
-                coordinates[i][0] = coordinates[j][0];
-                coordinates[i][1] = coordinates[j][1];
-
-                coordinates[j][0] = tempX;
-                coordinates[j][1] = tempY;
-            }
-        }
-    }
-}
-
 void setupWarehouse()
 {
     actualCoordinateCount = 0;
-    sortCoordinates();
+    sortCoordinates(coordinates, productCount);
 
     // count how many coordinates there are, so the bot doesnt try to pick up -1,-1 coordinates
     for (int i = 0; i < productCount; i++)
